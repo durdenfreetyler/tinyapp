@@ -34,7 +34,10 @@ app.get("/fetch", (req, res) => {
   res.send(`a = ${a}`);
 });
 
+
+
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
+  // res.send(`Hello, I'm here for you.`);
 });
