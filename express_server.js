@@ -66,6 +66,16 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  const id = generateRandomString(6);
+  urlDatabase[id] = req.body.longURL;
+  // console.log("urlDatabase", urlDatabase);
+  // get form
+  res.redirect(`/urls/${id}`);
+  // res.send("Ok"); // Respond with 'Ok' (we will replace this)
+});
+
+app.get("/u/:id", (req, res) => {
+  const shortURL = req.params.id;
+  const longURL = urlDatabase[shortURL];
+  res.redirect(longURL);
 });
