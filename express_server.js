@@ -1,6 +1,9 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
+const cookieParser = require("cookie-parser");
+
+app.use(cookieParser());
 
 const generateRandomString = function (length) {
   const characters =
@@ -48,7 +51,12 @@ app.get("/fetch", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["username"],
+  };
+  console.log(req.cookies["username"]);
+
   res.render("urls_index", templateVars);
   // res.send(`Hello, I'm here for you.`);
 });
@@ -90,13 +98,23 @@ app.post("/urls/:id", (req, res) => {
   const id = req.params.id;
   console.log(req.body);
   console.log(id);
-  console.log("hello");
+  // console.log("hello");
   urlDatabase[id] = req.body.URL;
   res.redirect("/urls");
 });
 
 app.post("/login", (req, res) => {
+  // const templateVars = {
+  //   username: req.cookies["username"],
+  // };
+
   const username = req.body.username;
   res.cookie("username", username);
+  // res.render("urls_index", templateVars);
+  res.redirect("/urls");
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
   res.redirect("/urls");
 });
