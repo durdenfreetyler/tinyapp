@@ -12,11 +12,18 @@
     >
       <span class="navbar-toggler-icon"></span>
     </button>
+    <br />
+
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
+    <form action="/login" method="POST">
+      <input type="text" name="username" />
+      <label for="">Login</label>
+      <button>Enter</button>
+    </form>
   </nav>
 </header>
