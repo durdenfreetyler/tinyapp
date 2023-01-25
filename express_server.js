@@ -85,3 +85,13 @@ app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[idToDelete];
   res.redirect("/urls");
 });
+
+app.post("/urls/:id", (req, res) => {
+  const id = req.params.id;
+  console.log(req.body);
+  console.log(id);
+  console.log("hello");
+  urlDatabase[id] = req.body.URL;
+  res.redirect("/urls");
+});
+
