@@ -28,7 +28,7 @@ const users = {
   userRandomId: {
     id: "userRandomId",
     email: "random@random.com",
-    passwords: 1234,
+    password: 1234,
   },
 };
 app.use(express.urlencoded({ extended: true }));
@@ -122,14 +122,32 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
+const userWithEmail = function (users, email) {
+  for (const userId in users) {
+    const user = users[userId];
+
+    if (user.email === email) {
+      return user;
+    }
+  }
+};
 app.post("/login", (req, res) => {
-  // const templateVars = {
-  //   username: req.cookies["user_id"],
-  // };
-  const email =
-    // const username = req.body.username;
-    res.cookie("user_id");
-  // res.render("urls_index", templateVars);
+  const password = req.body.password;
+  const email = req.body.email;
+  console.log("email", email);
+  console.log("password", password);
+  if (!email || !password) {
+    return res.status(400).send("please provide an email and a password");
+  }
+  const existingUser = userWithEmail(users, email);
+  if (!existingUser) {
+    return res.status(403).send("no user with that email found");
+  }
+  if (existingUser.password !== password) {
+    return res.status(403).send("the password doesn't match");
+  }
+  res.cookie("user_id", existingUser.id);
+
   res.redirect("/urls");
 });
 
@@ -144,45 +162,34 @@ app.get("/register", (req, res) => {
   const templateVars = { user };
   res.render("register", templateVars);
 });
-
 app.post("/register", (req, res) => {
-  // const username = req.body.username;
   const password = req.body.password;
   const email = req.body.email;
-  const id = generateRandomString(6);
-
-  const newUser = {
-    id: id,
-    email: email,
-    passwords: password,
-  };
-
-  console.log("!!!!!!!", users);
-  users[id] = newUser;
-
-  console.log("users[id]", users[id]);
-  // console.log("users", users);
   if (!email || !password) {
     return res.status(400).send("please provide an email and a password");
   }
-
-  let foundUser = null;
-  for (const userEmail in users) {
-    const user = userEmail[users];
-    console.log("users[id].email", users[id].email);
-    if (users[id].email === email) {
-      foundUser = user;
-      console.log("foundUser", foundUser);
-      return res
-        .status(400)
-        .send("there is already a user registered with that email");
-    }
-    console.log("foundUser:", foundUser);
-    if (!foundUser) {
-      return res.status(400).send("no user with that email found");
-    }
+  const existingUser = userWithEmail(users, email);
+  if (existingUser) {
+    return res
+      .status(400)
+      .send("there is already a user registered with that email");
   }
-  console.log("users[id].id", users[id].id);
-  res.cookie("user_id", users[id].id);
+  const id = generateRandomString(6);
+
+  users[id] = {
+    id: id,
+    email: email,
+    password: password,
+  };
+  console.log("!!!!!!!", users);
+
+  res.cookie("user_id", id);
   res.redirect("/urls");
+});
+
+app.get("/login", (req, res) => {
+  const id = req.cookies.user_id;
+  const user = users[id];
+  const templateVars = { user };
+  res.render("login", templateVars);
 });
